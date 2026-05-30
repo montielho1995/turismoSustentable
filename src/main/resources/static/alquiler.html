@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Turismo Sustentable</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="index.html">
+            <i class="fas fa-bicycle text-success"></i> ¡Pedalea y Explora!
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+
+                <li class="nav-item">
+                    <span class="nav-link text-white-50">
+                        Bienvenido/a, <span id="navbar-username" class="fw-bold text-white">...</span>
+                    </span>
+                </li>
+
+                <li class="nav-item ms-3">
+                    <a class="nav-link active" href="mis_alquileres.html">
+                        <i class="fas fa-history"></i> Mis Viajes
+                    </a>
+                </li>
+
+                <li class="nav-item ms-3">
+                    <button onclick="logout()" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="bg-success text-white text-center py-5 mt-5" style="background: linear-gradient(rgba(25,135,84,0.9), rgba(25,135,84,0.8)), url('https://images.unsplash.com/photo-1507035895480-08accd836bb1?auto=format&fit=crop&w=1000&q=80'); background-size: cover;">
+    <div class="container mt-3">
+        <h1 class="fw-bold">Elegí tu compañera de ruta</h1>
+        <p class="lead">Explorá las bicicletas disponibles en tiempo real</p>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container">
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <label class="form-label fw-bold text-muted">Filtrar por Estación:</label>
+                <select id="filtro-estacion" class="form-select shadow-sm">
+                    <option value="todas">Todas las Estaciones</option>
+                </select>
+            </div>
+            <div class="col-md-8 d-flex align-items-end justify-content-md-end mt-3 mt-md-0">
+                <small class="text-muted"><i class="fas fa-sync-alt"></i> Actualizado en tiempo real</small>
+            </div>
+        </div>
+
+        <div id="bicicletas-container" class="row g-4">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 text-muted">Buscando bicicletas disponibles...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modalAlquiler" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-clock"></i> Confirmar Alquiler</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <h4 id="modal-bici-codigo" class="fw-bold text-dark"></h4>
+                    <p id="modal-bici-ubicacion" class="text-muted"></p>
+                    <h3 class="text-success fw-bold" id="modal-bici-precio"></h3>
+                </div>
+
+                <form id="form-alquiler">
+                    <input type="hidden" id="modal-bici-id">
+                    <div class="mb-3">
+                        <label for="duracion" class="form-label fw-bold">¿Cuántas horas la usarás?</label>
+                        <input type="number" class="form-control form-control-lg text-center" id="duracion" value="1" min="1" max="24" required>
+                        <div class="form-text text-center">Tiempo máximo: 24 horas</div>
+                    </div>
+
+                    <div class="alert alert-light border text-center">
+                        <strong>Total Estimado (en dólares):</strong> <span id="calculo-total" class="text-success fw-bold">$0.00</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success px-5 rounded-pill" onclick="confirmarAlquiler()">
+                    ¡Alquilar Ahora!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-auto">
+    <div class="container">
+        <p class="mb-0">&copy; 2025 Turismo Sustentable Río Grande.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="js/auth.js"></script>
+<script src="js/alquiler.js"></script>
+
+</body>
+</html>
